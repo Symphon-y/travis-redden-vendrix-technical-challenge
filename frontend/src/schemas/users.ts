@@ -29,15 +29,22 @@ export type UserRole = z.infer<typeof userRoleSchema>;
 /**
  * @summary     Schema for a "user" entity type
  */
+const thisYear = new Date().getFullYear();
+
 export const User = z.object({
   _id: z.string().uuid(),
   role: userRoleSchema,
   name: z.object({
-    familyName: z.string().min(10).max(3000),
-    givenName: z.string().min(10).max(2000),
+    familyName: z.string().min(1).max(2000),
+    givenName: z.string().min(1).max(2000),
     middleName: z.string().optional(),
     suffix: z.string().optional(),
     title: z.string().optional(),
+  }),
+  dateOfBirth: z.object({
+    birthMonth: z.number().min(1).max(12),
+    birthDate: z.number().min(1).max(31),
+    birthYear: z.number().min(1900).max(thisYear),
   }),
   email: z.string().email(),
 });

@@ -48,7 +48,7 @@ Because we are using a Next.js frontend and accessing a locally hosted API, we m
 
 Think about what data validations would be useful for a "users" document collection.
 
-- [ ] Adjust schemas in "src/schemas/users.ts".
+- [x] Adjust schemas in "src/schemas/users.ts".
 
 <br>
 
