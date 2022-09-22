@@ -60,6 +60,7 @@ export type User = z.infer<typeof User>;
 export const createUserSchema = User.pick({
   role: true,
   name: true,
+  dateOfBirth: true,
   email: true,
 });
 export type CreateUser = z.infer<typeof createUserSchema>;
@@ -67,6 +68,7 @@ export type CreateUser = z.infer<typeof createUserSchema>;
 export const updateUserSchema = User.pick({
   role: true,
   name: true,
+  dateOfBirth: true,
   email: true,
 }).partial();
 export type UpdateUser = z.infer<typeof updateUserSchema>;
@@ -86,6 +88,11 @@ export const defaultValuesUser = (): CreateUser => ({
     middleName: undefined,
     suffix: undefined,
     title: undefined,
+  },
+  dateOfBirth: {
+    birthMonth: 1,
+    birthDate: 2,
+    birthYear: 1990,
   },
   email: '',
 });

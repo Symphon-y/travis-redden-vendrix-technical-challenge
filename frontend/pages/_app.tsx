@@ -7,6 +7,11 @@ import 'typeface-mulish';
 import ThemeProvider from '../src/theme';
 import GlobalStyles from '../src/theme/globalStyles';
 import ThemeColorPresets from '../src/theme/ThemeColorPresets';
+
+// Date Picker Dependencies
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -28,9 +33,11 @@ export default function VendrixExampleApp(props: AppProps) {
         <ThemeColorPresets>
           <GlobalStyles />
           <QueryClientProvider client={queryClient}>
-            <Hydrate state={dehydratedState}>
-              <Component {...pageProps} suppressHydrationWarning={true} />
-            </Hydrate>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Hydrate state={dehydratedState}>
+                <Component {...pageProps} suppressHydrationWarning={true} />
+              </Hydrate>
+            </LocalizationProvider>
           </QueryClientProvider>
         </ThemeColorPresets>
       </ThemeProvider>

@@ -11,10 +11,19 @@ import {
 // Hooks
 import useCreateUser from '../../hooks/users/useCreateUser';
 import useUpdateUser from '../../hooks/users/useUpdateUser';
+import { useState } from 'react';
 // Components
 import { LoadingButton } from '@mui/lab';
-import { Stack, Button, Box, Container, Typography } from '@mui/material';
+import {
+  TextField,
+  Stack,
+  Button,
+  Box,
+  Container,
+  Typography,
+} from '@mui/material';
 import StringInput from '../input/StringInput';
+import { DatePicker } from '@mui/x-date-pickers';
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
@@ -39,6 +48,7 @@ export default function UserCreateUpdateForm({ user, onClose }: Props) {
   // HOOKS
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser(String(user?._id));
+  const [dateOfBirth, setDateOfBirth] = useState(new Date());
 
   // CONFIG
   const defaultValues = user ? user : defaultValuesUser();
@@ -100,13 +110,40 @@ export default function UserCreateUpdateForm({ user, onClose }: Props) {
           <FormProvider {...formMethods}>
             <form
               onSubmit={handleSubmit((data) => handleSave(data))}
-              className='form'
-            >
+              className='form'>
               <Stack spacing={2}>
+                <StringInput
+                  fieldName='name.title'
+                  label='Title'
+                  control={control}
+                />
+                <StringInput
+                  fieldName='name.givenName'
+                  label='Given Name (First Name)'
+                  control={control}
+                />
                 <StringInput
                   fieldName='name.middleName'
                   label='Middle Name'
                   control={control}
+                />
+                <StringInput
+                  fieldName='name.familyName'
+                  label='Last Name (Surname)'
+                  control={control}
+                />
+                <StringInput
+                  fieldName='name.suffix'
+                  label='Suffix'
+                  control={control}
+                />
+                <DatePicker
+                  label='Date of Birth'
+                  value={dateOfBirth}
+                  onChange={(newValue: any) => {
+                    setDateOfBirth(newValue);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
                 />
               </Stack>
 
@@ -122,16 +159,14 @@ export default function UserCreateUpdateForm({ user, onClose }: Props) {
                     createUserMutation.isLoading ||
                     updateUserMutation.isLoading
                   }
-                  disabled={!isDirty || !isValid}
-                >
+                  disabled={!isDirty || !isValid}>
                   Save
                 </LoadingButton>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button
                   onClick={() => {
                     reset();
-                  }}
-                >
+                  }}>
                   Reset
                 </Button>
               </Stack>

@@ -42,7 +42,7 @@ Take some time to familiarize yourself with the codebase. Notice how the folder 
 
 Because we are using a Next.js frontend and accessing a locally hosted API, we must map client-side requests appropriately to avoid CORS issues.
 
-- [ ] Adjust app configuration in "next.config.js".
+- [x] Adjust app configuration in "next.config.js".
 
 ### Step 1.3. Configure schemas
 
