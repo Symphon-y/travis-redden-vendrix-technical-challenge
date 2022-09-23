@@ -1,13 +1,27 @@
 import express, { NextFunction, Response, Request } from 'express';
 import { createClient } from 'redis';
+import * as dotenv from 'dotenv';
+import axios from 'axios';
+import { nextTick } from 'process';
+
+dotenv.config();
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 
 const app = express();
+const apiKey = process.env.HIGHNOTE_API_KEY;
 
 // Body Parser
 app.use(express.json());
 let redisClient: any;
+
+// Custom Middleware (colorize requests in console)
+app.use((req, res, next) => {
+  console.log(
+    `*=== \x1b[34mNew Request Logged:\x1b[0m Type: \x1b[33m${req.method}\x1b[0m REQUEST, URL: \x1b[33m${req.url}\x1b[0m ===*`
+  );
+  next();
+});
 
 (async () => {
   redisClient = createClient();
@@ -19,7 +33,7 @@ let redisClient: any;
   await redisClient.connect();
 })();
 
-app.use('/', async (req: Request, res: Response, next: NextFunction) => {
+app.use('/users', async (req: Request, res: Response, next: NextFunction) => {
   res.set('Access-Control-Allow-Origin', '*');
 
   if (req.method === 'OPTIONS') {
@@ -64,7 +78,6 @@ app.use('/', async (req: Request, res: Response, next: NextFunction) => {
       });
     }
   }
-  next();
 });
 
 /**
@@ -75,7 +88,128 @@ app.use('/', async (req: Request, res: Response, next: NextFunction) => {
 app.use(
   '/cards/:cardId',
   async (req: Request, res: Response, next: NextFunction) => {
-    next();
+    console.log(`API Key ${apiKey}`);
+    console.log(`cardId', ${req.params.cardId}`);
+    const encodedAPIKey = `Basic ${Buffer.from(`${apiKey}`).toString(
+      'base64'
+    )}`;
+    console.log(encodedAPIKey);
+    const endpointUrl = 'https://api.us.test.highnoteplatform.com/graphql';
+    const cardId = req.params.cardId;
+    const params = JSON.stringify({
+      query: `query GetPaymentCardById($paymentCardId: ID!) {
+        node(id: $paymentCardId) {
+          ... on PaymentCard {
+            id
+            bin
+            last4
+            expirationDate
+            network
+            status
+            formFactor
+            restrictedDetails {
+              ... on PaymentCardRestrictedDetails {
+                number
+                cvv
+              }
+              ... on AccessDeniedError {
+                message
+              }
+            }
+            physicalPaymentCardOrders {
+              id
+              paymentCardShipment {
+                courier {
+                  method
+                  signatureRequiredOnDelivery
+                  tracking {
+                    trackingNumber
+                    actualShipDateLocal
+                  }
+                }
+                requestedShipDate
+                deliveryDetails {
+                  name {
+                    middleName
+                    givenName
+                    familyName
+                    suffix
+                    title
+                  }
+                  companyName
+                  address {
+                    streetAddress
+                    extendedAddress
+                    postalCode
+                    region
+                    locality
+                    countryCodeAlpha3
+                  }
+                }
+                senderDetails {
+                  name {
+                    givenName
+                    middleName
+                    familyName
+                    suffix
+                    title
+                  }
+                  companyName
+                  address {
+                    streetAddress
+                    extendedAddress
+                    postalCode
+                    region
+                    locality
+                    countryCodeAlpha3
+                  }
+                }
+              }
+              orderState {
+                status
+              }
+              cardPersonalization {
+                textLines {
+                  line1
+                  line2
+                }
+              }
+              createdAt
+              updatedAt
+              stateHistory {
+                previousStatus
+                newStatus
+                createdAt
+              }
+            }
+          }
+        }
+      }
+      `,
+      variables: {
+        paymentCardId: cardId,
+      },
+    });
+    const config = {
+      method: 'post',
+      url: endpointUrl,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        Authorization: `${encodedAPIKey}`,
+      },
+      params,
+    };
+
+    axios(config)
+      .then((response) => {
+        console.log(response.data);
+        res.send(JSON.stringify(response.data));
+      })
+      .catch(function (error: Error) {
+        console.log(
+          `*=== \x1b[34mERROR!\x1b[0m ===* ${error} *=== \x1b[34mERROR!\x1b[0m ===* `
+        );
+      });
   }
 );
 

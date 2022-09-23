@@ -132,12 +132,12 @@ Use the below checklist to help keep track of your completed work.
 
 ### Implementation
 
-- [ ] Review the codebase
-- [ ] Configure application in "next.config.js"
-- [ ] Configure schemas in "src/schemas/users.ts"
-- [ ] Add missing fields/inputs to the form
-- [ ] Ensure all input fields are being validated correctly per the "zod" schema
-- [ ] Submit valid data to the API
+- [x] Review the codebase
+- [x] Configure application in "next.config.js"
+- [x] Configure schemas in "src/schemas/users.ts"
+- [x] Add missing fields/inputs to the form
+- [x] Ensure all input fields are being validated correctly per the "zod" schema
+- [x] Submit valid data to the API
 - [ ] Style/rearrange the UserCreateUpdateForm component
 - [ ] Style/rearrange the UsersList component
 
@@ -147,19 +147,19 @@ Use the below checklist to help keep track of your completed work.
 
 - [ ] In your own words, how could this form be optimized? Think in terms of both performance and UI/UX.
 
-  > [YOUR RESPONSE]
+  > I personally prefer a more currated approach to forms, rather than a static "form on a page." By this I mean I'd like to see a form or any other experience guide the user through the prompts. This way it feels more interactice and inviting.
 
 - [ ] There is a way to optimize the "StringInput" component (src/components/input/StringInput.tsx) using a React feature. What React feature/s would you use to optimize the component and reduce rerenders?
 
-  > [YOUR RESPONSE]
+  > I'm unsure of the answer you are looking for off the top of my head but Im leaning towards a react hook maybe useEffect or useContext.
 
 - [ ] What STEM subject/research/product excites you most and why?
 
-  > [YOUR RESPONSE]
+  > There are too many too really go into huge detail but in Finance, if regulatory agencies dont get more involved blockchain technology is incredibly exciting. The idea of decentralizing wealth has huge implications for the future of monitary theory. Medicine, MRNA technology is crazy cool. This tech uses messenger RNA as a way to train the immune system to fight not only viruses but has shown huge promise in fighting cancers and other diseases. Space/Engineering, the james webb telescope has shown us that our theories on how "older galaxies" should look was completely off which paves the way for tons of new research into why that is.
 
 - [ ] Any other thoughts?
-
-  > [YOUR RESPONSE]
+- [ ]
+  > I would approach the server with a seperation of concerns mindset by having a controllers and routes folder for better organization.
 
   <br>
 

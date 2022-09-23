@@ -11,7 +11,6 @@ import {
 // Hooks
 import useCreateUser from '../../hooks/users/useCreateUser';
 import useUpdateUser from '../../hooks/users/useUpdateUser';
-import { useState } from 'react';
 // Components
 import { LoadingButton } from '@mui/lab';
 import {
@@ -23,7 +22,7 @@ import {
   Typography,
 } from '@mui/material';
 import StringInput from '../input/StringInput';
-import { DatePicker } from '@mui/x-date-pickers';
+import DateInput from '../input/DateInput';
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
@@ -48,7 +47,6 @@ export default function UserCreateUpdateForm({ user, onClose }: Props) {
   // HOOKS
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser(String(user?._id));
-  const [dateOfBirth, setDateOfBirth] = useState(new Date());
 
   // CONFIG
   const defaultValues = user ? user : defaultValuesUser();
@@ -58,10 +56,11 @@ export default function UserCreateUpdateForm({ user, onClose }: Props) {
    * @docs  https://react-hook-form.com/api/useform/
    */
   const formMethods = useForm<User>({
-    mode: 'onTouched',
+    mode: 'onChange',
     resolver: zodResolver(user ? updateUserSchema : createUserSchema),
     defaultValues,
   });
+
   const {
     handleSubmit,
     control,
@@ -137,13 +136,15 @@ export default function UserCreateUpdateForm({ user, onClose }: Props) {
                   label='Suffix'
                   control={control}
                 />
-                <DatePicker
+                <StringInput
+                  fieldName='email'
+                  label='Email'
+                  control={control}
+                />
+                <DateInput
+                  fieldName='dateOfBirth'
                   label='Date of Birth'
-                  value={dateOfBirth}
-                  onChange={(newValue: any) => {
-                    setDateOfBirth(newValue);
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
+                  control={control}
                 />
               </Stack>
 

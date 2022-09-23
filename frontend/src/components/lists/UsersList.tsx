@@ -47,8 +47,7 @@ function UsersListItem({ user }: UsersListItemProps) {
           key={user._id}
           spacing={2}
           justifyContent='center'
-          alignItems='center'
-        >
+          alignItems='center'>
           {/* Given Name */}
           <Grid item lg={3}>
             <Typography>{user.name.givenName}</Typography>
