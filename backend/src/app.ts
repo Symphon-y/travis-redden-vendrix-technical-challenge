@@ -1,8 +1,8 @@
 import express, { NextFunction, Response, Request } from 'express';
 import { createClient } from 'redis';
 import * as dotenv from 'dotenv';
+import { gqlQuery_Get_Card_By_ID } from './graphql/GetPaymentCardById';
 import axios from 'axios';
-import { nextTick } from 'process';
 
 dotenv.config();
 // -------------------------------------------------------------
@@ -88,129 +88,63 @@ app.use('/users', async (req: Request, res: Response, next: NextFunction) => {
 app.use(
   '/cards/:cardId',
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log(`API Key ${apiKey}`);
-    console.log(`cardId', ${req.params.cardId}`);
     const encodedAPIKey = `Basic ${Buffer.from(`${apiKey}`).toString(
       'base64'
     )}`;
-    console.log(encodedAPIKey);
-    const endpointUrl = 'https://api.us.test.highnoteplatform.com/graphql';
+    const endpointUrl = 'https://api.us.highnoteplatform.com/graphql';
     const cardId = req.params.cardId;
-    const params = JSON.stringify({
-      query: `query GetPaymentCardById($paymentCardId: ID!) {
-        node(id: $paymentCardId) {
-          ... on PaymentCard {
-            id
-            bin
-            last4
-            expirationDate
-            network
-            status
-            formFactor
-            restrictedDetails {
-              ... on PaymentCardRestrictedDetails {
-                number
-                cvv
-              }
-              ... on AccessDeniedError {
-                message
-              }
-            }
-            physicalPaymentCardOrders {
-              id
-              paymentCardShipment {
-                courier {
-                  method
-                  signatureRequiredOnDelivery
-                  tracking {
-                    trackingNumber
-                    actualShipDateLocal
-                  }
-                }
-                requestedShipDate
-                deliveryDetails {
-                  name {
-                    middleName
-                    givenName
-                    familyName
-                    suffix
-                    title
-                  }
-                  companyName
-                  address {
-                    streetAddress
-                    extendedAddress
-                    postalCode
-                    region
-                    locality
-                    countryCodeAlpha3
-                  }
-                }
-                senderDetails {
-                  name {
-                    givenName
-                    middleName
-                    familyName
-                    suffix
-                    title
-                  }
-                  companyName
-                  address {
-                    streetAddress
-                    extendedAddress
-                    postalCode
-                    region
-                    locality
-                    countryCodeAlpha3
-                  }
-                }
-              }
-              orderState {
-                status
-              }
-              cardPersonalization {
-                textLines {
-                  line1
-                  line2
-                }
-              }
-              createdAt
-              updatedAt
-              stateHistory {
-                previousStatus
-                newStatus
-                createdAt
-              }
-            }
-          }
-        }
-      }
-      `,
-      variables: {
-        paymentCardId: cardId,
-      },
-    });
-    const config = {
-      method: 'post',
-      url: endpointUrl,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        Authorization: `${encodedAPIKey}`,
-      },
-      params,
-    };
-
-    axios(config)
-      .then((response) => {
-        console.log(response.data);
-        res.send(JSON.stringify(response.data));
-      })
-      .catch(function (error: Error) {
-        console.log(
-          `*=== \x1b[34mERROR!\x1b[0m ===* ${error} *=== \x1b[34mERROR!\x1b[0m ===* `
-        );
+    if (req.method === 'GET') {
+      const params = JSON.stringify({
+        query: gqlQuery_Get_Card_By_ID,
       });
+
+      const config = {
+        method: 'POST',
+        url: endpointUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${encodedAPIKey}`,
+        },
+        body: params,
+      };
+
+      axios(config)
+        .then((response) => {
+          console.log(response.data);
+          res.send(JSON.stringify(response.data));
+        })
+        .catch(function (error: Error) {
+          console.log(
+            `*=== \x1b[34mERROR!\x1b[0m ===* ${error} *=== \x1b[34mERROR!\x1b[0m ===* `
+          );
+        });
+    }
   }
 );
 
 export default app;
+
+// const apolloClient = new ApolloClient({
+//   headers: {
+//     'Content-Type': 'application/json',
+//     authorization: `${encodedAPIKey}`,
+//   },
+//   link: new HttpLink({
+//     uri: endpointUrl,
+//     fetch,
+//   }),
+//   cache: new InMemoryCache(),
+// });
+
+// const cardInfo = await apolloClient.query({
+//   query: gqlQuery_Get_Card_By_ID,
+//   variables: { paymentCardId: cardId },
+// });
+
+// if (cardInfo) {
+//   return res.status(200).json({
+//     data: JSON.parse(cardInfo.data),
+//   });
+// } else {
+//   return cardInfo;
+// }
